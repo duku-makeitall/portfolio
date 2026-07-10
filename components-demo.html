@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>에듀테크 포트폴리오 - 컴포넌트 플레이그라운드 데모</title>
+  <!-- 공통 디자인 시스템 CSS 로드 -->
+  <link rel="stylesheet" href="./components/theme.css">
+  <style>
+    /* 데모 플레이그라운드 전용 스타일 */
+    :root {
+      --sidebar-width: 260px;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background-color: #f2f2f7; /* 플레이그라운드 외부 배경은 정돈된 라이트 그레이 */
+      overflow: hidden;
+    }
+
+    /* 좌측 사이드바 네비게이션 */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--color-text-primary);
+      color: #ffffff;
+      padding: var(--spacing-md) 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--color-border);
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+      border-bottom: 1px solid #2c2c2e;
+    }
+
+    .sidebar-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-primary-main);
+    }
+
+    .sidebar-subtitle {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: var(--spacing-md) 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .menu-item {
+      padding: 12px var(--spacing-md);
+      font-size: 14px;
+      font-weight: 700;
+      color: #c7c7cc;
+      cursor: pointer;
+      transition: var(--transition-normal);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      color: #ffffff;
+      background-color: #2c2c2e;
+    }
+
+    .menu-item.active {
+      border-left: 4px solid var(--color-primary-main);
+    }
+
+    /* 우측 메인 콘텐츠 뷰어 */
+    .main-viewer {
+      flex-grow: 1;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .viewer-header {
+      background-color: #ffffff;
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .viewer-title {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .viewer-desc {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+    }
+
+    /* 데모 영역 그리드 (컴포넌트 뷰 + 속성 조절기) */
+    .workspace {
+      padding: var(--spacing-lg);
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--spacing-lg);
+      flex-grow: 1;
+      align-items: start;
+    }
+
+    /* 컴포넌트 실제 렌더링 박스 */
+    .preview-box {
+      background-color: var(--color-bg-main);
+      border: 1px dashed var(--color-secondary-main);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      min-height: 450px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* 컴포넌트 영역임을 알리는 라벨 */
+    .preview-box::before {
+      content: "PREVIEW ZONE";
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--color-secondary-main);
+      background-color: rgba(48, 176, 199, 0.1);
+      padding: 4px 8px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+
+    /* 컨트롤러 (속성 조작 콘솔) */
+    .control-panel {
+      background-color: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 800;
+      border-bottom: 2px solid var(--color-border);
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text-secondary);
+    }
+
+    .form-input {
+      padding: 8px 12px;
+      font-size: 13px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      border-color: var(--color-primary-main);
+    }
+
+    .form-textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .btn-apply {
+      height: 40px;
+      background-color: var(--color-primary-main);
+      color: #ffffff;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      margin-top: 8px;
+      box-shadow: 0 4px 12px rgba(255, 159, 10, 0.25);
+      transition: var(--transition-bounce);
+    }
+
+    .btn-apply:hover {
+      background-color: var(--color-primary-light);
+      color: var(--color-text-primary);
+    }
+
+    .btn-apply:active {
+      transform: scale(0.97);
+    }
+
+    /* 반응형 화면 처리 */
+    @media (max-width: 991px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      body {
+        flex-direction: column;
+        overflow: auto;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+      }
+      .main-viewer {
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 좌측 컴포넌트 목록 사이드바 -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Edu Component</div>
+      <div class="sidebar-subtitle">Playground & Catalog v1.0</div>
+    </div>
+    <ul class="sidebar-menu">
+      <li class="menu-item active" data-target="header">Header (네비게이션)</li>
+      <li class="menu-item" data-target="hero">Hero (자기소개 & 카드)</li>
+      <li class="menu-item" data-target="card">ProjectCard (프로젝트 카드)</li>
+      <li class="menu-item" data-target="modal">ProjectModal (상세 모달)</li>
+      <li class="menu-item" data-target="contact">Contact (소셜 & 연락처)</li>
+    </ul>
+  </aside>
+
+  <!-- 우측 프리뷰 영역 -->
+  <main class="main-viewer">
+    <div class="viewer-header">
+      <h1 class="viewer-title" id="view-title">Header Component</h1>
+      <p class="viewer-desc" id="view-desc">상단 로고 및 스무스 스크롤 네비게이션 바 기능을 제공합니다.</p>
+    </div>
+
+    <div class="workspace">
+      <!-- 컴포넌트 렌더링 프리뷰 존 -->
+      <div class="preview-box" id="component-preview-zone"></div>
+
+      <!-- 실시간 데이터 속성 컨트롤러 패널 -->
+      <div class="control-panel" id="component-control-panel"></div>
+    </div>
+  </main>
+
+  <script type="module">
+    // 모든 포트폴리오 웹 컴포넌트 등록 및 모듈 임포트
+    import "./components/EduHeader.js";
+    import "./components/EduHero.js";
+    import "./components/EduProjectCard.js";
+    import "./components/EduProjectModal.js";
+    import "./components/EduContact.js";
+
+    // 기본 가상 데이터 로드용 객체
+    const defaultData = {
+      profile: {
+        title: "하드웨어로 배움의 즐거움을 설계하는 에듀테크 콘텐츠 개발자",
+        description: "아두이노와 라즈베리파이를 활용한 피지컬 컴퓨팅 교육에 강점이 있습니다. 기술을 재미있고 직관적인 콘텐츠로 풀어내어 학습자에게 창의적인 메이커 경험을 선물합니다.",
+        skills: ["Arduino", "Raspberry Pi", "Python", "C/C++"],
+        aboutCard: {
+          bullets: [
+            "아두이노/라즈베리파이 기반의 피지컬 컴퓨팅 교안 설계 및 시범 강의 경험 다수",
+            "초등학생부터 성인까지, 학습자 수준에 맞춘 스토리텔링형 코딩 커리큘럼 제작",
+            "하드웨어 회로 설계부터 Flask/Python 웹 시각화 플랫폼까지 직접 구현 가능한 융합형 인재"
+          ],
+          interests: ["소프트웨어 교육 콘텐츠 개발", "메이커 교육 기획", "피지컬 컴퓨팅"]
+        },
+        email: "seunghwa@example.com",
+        github: "https://github.com/seunghwa-portfolio",
+        blog: "https://notion.so/seunghwa-maker-activity"
+      },
+      project: {
+        title: "Smart-Pet: 초등 피지컬 코딩 교구",
+        summary: "조도 센서와 모터를 이용한 아두이노 반려 로봇 교구 및 교육 커리큘럼 설계",
+        description: "아이들이 직접 하드웨어 회로를 조립하고 센서값을 다루며 코딩을 배울 수 있는 반려 동물 형태의 교구입니다. 조도 센서와 서보 모터를 결합하여 빛 가림 시 인터랙션이 발생하도록 설계하였습니다.",
+        tags: ["아두이노", "C/C++", "교구 제작"],
+        image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=800&q=80",
+        links: {
+          github: "https://github.com/seunghwa-portfolio/smart-pet",
+          demo: ""
+        }
+      }
+    };
+
+    const previewZone = document.getElementById("component-preview-zone");
+    const controlPanel = document.getElementById("component-control-panel");
+    const viewTitle = document.getElementById("view-title");
+    const viewDesc = document.getElementById("view-desc");
+
+    // 각 메뉴별 렌더링 맵
+    const componentRenderers = {
+      header: () => {
+        viewTitle.innerText = "Header Component (<edu-header>)";
+        viewDesc.innerText = "전체 페이지 상단에 고정 부착되어 부드러운 스크롤 이동 및 탭 가이드 역할을 수행합니다.";
+        
+        previewZone.innerHTML = `<edu-header style="position: absolute; top:0; left:0; width:100%;"></edu-header>
+                                 <div style="margin-top: 80px; text-align: center; color: #8e8e93;">
+                                   헤더는 fixed 설정되어 프리뷰 상단에 부착됩니다. <br>네비게이션 탭 동작을 확인해 보세요.
+                                 </div>`;
+        
+        controlPanel.innerHTML = `
+          <div class="panel-title">Header 속성 제어</div>
+          <p style="font-size: 13px; color:#8e8e93;">Header 컴포넌트는 전역 요소로 설정 변경 없이 자동 마운트됩니다.</p>
+        `;
+      },
+
+      hero: () => {
+        viewTitle.innerText = "Hero Component (<edu-hero>)";
+        viewDesc.innerText = "자기소개 헤드라인, 핵심 기술 스택 배지 리스트 및 핵심 역량 3줄 요약 카드로 이루어진 히어로 뷰입니다.";
+
+        previewZone.innerHTML = "";
+        const heroEl = document.createElement("edu-hero");
+        heroEl.profileData = defaultData.profile;
+        heroEl.style.width = "100%";
+        previewZone.appendChild(heroEl);
+
+        controlPanel.innerHTML = `
+          <div class="panel-title">Hero 속성 제어</div>
+          <div class="form-group">
+            <label class="form-label">헤드라인 타이틀</label>
+            <input class="form-input" id="hero-in-title" value="${defaultData.profile.title}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">간단 설명글</label>
+            <textarea class="form-input form-textarea" id="hero-in-desc">${defaultData.profile.description}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">기술 스택 (쉼표로 구분)</label>
+            <input class="form-input" id="hero-in-skills" value="${defaultData.profile.skills.join(', ')}">
+          </div>
+          <button class="btn-apply" id="hero-btn-apply">변경 사항 적용</button>
+        `;
+
+        document.getElementById("hero-btn-apply").addEventListener("click", () => {
+          const t = document.getElementById("hero-in-title").value;
+          const d = document.getElementById("hero-in-desc").value;
+          const s = document.getElementById("hero-in-skills").value.split(",").map(i => i.trim()).filter(Boolean);
+          
+          heroEl.profileData = {
+            ...defaultData.profile,
+            title: t,
+            description: d,
+            skills: s
+          };
+        });
+      },
+
+      card: () => {
+        viewTitle.innerText = "ProjectCard Component (<edu-project-card>)";
+        viewDesc.innerText = "단일 프로젝트의 요약 카드 뷰입니다. 위로 떠오르는 마이크로 트랜지션 효과를 탑재하고 있습니다.";
+
+        previewZone.innerHTML = "";
+        const cardEl = document.createElement("edu-project-card");
+        cardEl.projectData = defaultData.project;
+        cardEl.style.width = "340px";
+        previewZone.appendChild(cardEl);
+
+        controlPanel.innerHTML = `
+          <div class="panel-title">Project Card 제어</div>
+          <div class="form-group">
+            <label class="form-label">프로젝트명</label>
+            <input class="form-input" id="card-in-title" value="${defaultData.project.title}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">요약 내용</label>
+            <textarea class="form-input form-textarea" id="card-in-sum">${defaultData.project.summary}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">태그 (쉼표로 구분)</label>
+            <input class="form-input" id="card-in-tags" value="${defaultData.project.tags.join(', ')}">
+          </div>
+          <button class="btn-apply" id="card-btn-apply">변경 사항 적용</button>
+        `;
+
+        document.getElementById("card-btn-apply").addEventListener("click", () => {
+          const t = document.getElementById("card-in-title").value;
+          const s = document.getElementById("card-in-sum").value;
+          const tg = document.getElementById("card-in-tags").value.split(",").map(i => i.trim()).filter(Boolean);
+
+          cardEl.projectData = {
+            ...defaultData.project,
+            title: t,
+            summary: s,
+            tags: tg
+          };
+        });
+        
+        // 카드 선택 이벤트 리스너 테스트
+        cardEl.addEventListener("project-select", (e) => {
+          alert(`카드 클릭 이벤트 감지!\n\n프로젝트: ${e.detail.title}`);
+        });
+      },
+
+      modal: () => {
+        viewTitle.innerText = "ProjectModal Component (<edu-project-modal>)";
+        viewDesc.innerText = "프로젝트 상세 설명을 표현하는 라이트 박스 다이얼로그 모달 컴포넌트입니다.";
+
+        previewZone.innerHTML = `
+          <button class="cta-button" id="btn-open-test-modal" style="height:48px; padding:0 24px; background:var(--color-primary-main); color:white; font-weight:700; border-radius:12px; box-shadow:0 4px 12px rgba(255,159,10,0.2)">
+            상세 모달창 띄우기 (동작 확인)
+          </button>
+          <edu-project-modal id="playground-modal"></edu-project-modal>
+        `;
+
+        const modalEl = previewZone.querySelector("#playground-modal");
+        
+        document.getElementById("btn-open-test-modal").addEventListener("click", () => {
+          modalEl.open(defaultData.project);
+        });
+
+        controlPanel.innerHTML = `
+          <div class="panel-title">Project Modal 제어</div>
+          <div class="form-group">
+            <label class="form-label">상세 상세설명 내용</label>
+            <textarea class="form-input form-textarea" id="modal-in-desc" style="min-height:120px;">${defaultData.project.description}</textarea>
+          </div>
+          <button class="btn-apply" id="modal-btn-apply">내용 미리 입력 후 적용</button>
+        `;
+
+        document.getElementById("modal-btn-apply").addEventListener("click", () => {
+          const d = document.getElementById("modal-in-desc").value;
+          defaultData.project.description = d;
+          modalEl.open(defaultData.project);
+        });
+      },
+
+      contact: () => {
+        viewTitle.innerText = "Contact Component (<edu-contact>)";
+        viewDesc.innerText = "이메일 복사 툴팁, 깃허브 링크, 노션/블로그 링크 등의 연락 통로 레이아웃 컴포넌트입니다.";
+
+        previewZone.innerHTML = "";
+        const contactEl = document.createElement("edu-contact");
+        contactEl.contactData = defaultData.profile;
+        contactEl.style.width = "100%";
+        previewZone.appendChild(contactEl);
+
+        controlPanel.innerHTML = `
+          <div class="panel-title">Contact 속성 제어</div>
+          <div class="form-group">
+            <label class="form-label">이메일 주소</label>
+            <input class="form-input" id="contact-in-email" value="${defaultData.profile.email}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">GitHub URL</label>
+            <input class="form-input" id="contact-in-github" value="${defaultData.profile.github}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notion / Blog URL</label>
+            <input class="form-input" id="contact-in-blog" value="${defaultData.profile.blog}">
+          </div>
+          <button class="btn-apply" id="contact-btn-apply">변경 사항 적용</button>
+        `;
+
+        document.getElementById("contact-btn-apply").addEventListener("click", () => {
+          const e = document.getElementById("contact-in-email").value;
+          const g = document.getElementById("contact-in-github").value;
+          const b = document.getElementById("contact-in-blog").value;
+
+          contactEl.contactData = {
+            email: e,
+            github: g,
+            blog: b
+          };
+        });
+      }
+    };
+
+    // 사이드바 메뉴 전환 로직
+    const menuItems = document.querySelectorAll(".menu-item");
+    menuItems.forEach(item => {
+      item.addEventListener("click", () => {
+        menuItems.forEach(i => i.classList.remove("active"));
+        item.classList.add("active");
+        
+        const target = item.getAttribute("data-target");
+        if (componentRenderers[target]) {
+          componentRenderers[target]();
+        }
+      });
+    });
+
+    // 기본 첫 화면 렌더링 (Header)
+    componentRenderers.header();
+  </script>
+</body>
+</html>

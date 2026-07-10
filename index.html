@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이승화 | 에듀테크 콘텐츠 개발자 포트폴리오</title>
+  <!-- 공통 디자인 시스템 CSS 스타일시트 로드 -->
+  <link rel="stylesheet" href="./components/theme.css">
+  <style>
+    /* 데모 페이지 전용 추가 레이아웃 스타일 */
+    
+    /* 각 주요 섹션 기본 패딩 및 구분선 */
+    section {
+      padding: var(--spacing-xxl, 64px) var(--spacing-md, 24px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    /* 프로젝트 섹션 스타일링 */
+    #projects {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 100px;
+    }
+
+    .section-header {
+      margin-bottom: var(--spacing-xl, 48px);
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--color-text-primary);
+      position: relative;
+      display: inline-block;
+    }
+
+    /* 에듀테크 풍의 부드러운 언더라인 장식 */
+    .section-title::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background-color: var(--color-secondary-main);
+      border-radius: var(--radius-pill);
+    }
+
+    .section-description {
+      margin-top: 12px;
+      font-size: 16px;
+      color: var(--color-text-secondary);
+    }
+
+    /* 프로젝트 카드가 배치될 그리드 시스템 */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: var(--spacing-lg, 32px);
+      margin-top: var(--spacing-lg, 32px);
+    }
+
+    /* 스크롤 페이드인 애니메이션 (Scroll Reveal) */
+    .reveal-section {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .reveal-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 푸터 영역 스타일 */
+    footer {
+      background-color: var(--color-text-primary);
+      color: var(--color-text-secondary);
+      padding: var(--spacing-lg, 32px) var(--spacing-md, 24px);
+      text-align: center;
+      font-size: 14px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    footer p {
+      margin-bottom: 8px;
+    }
+
+    footer .copyright {
+      font-size: 12px;
+      color: #555558;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. 상단 네비게이션 헤더 컴포넌트 -->
+  <edu-header></edu-header>
+
+  <!-- 2. 자기소개 히어로 컴포넌트 -->
+  <div id="home" class="reveal-section">
+    <edu-hero id="hero-section"></edu-hero>
+  </div>
+
+  <!-- 3. 프로젝트 포트폴리오 그리드 섹션 -->
+  <section id="projects" class="reveal-section">
+    <div class="section-header">
+      <h2 class="section-title">교육용 프로젝트</h2>
+      <p class="section-description">아두이노, 라즈베리파이를 활용한 대표 교육 콘텐츠 및 교구 제작물입니다.</p>
+    </div>
+    
+    <!-- 개별 프로젝트 카드 컴포넌트들이 동적으로 채워지는 그리드 영역 -->
+    <div class="projects-grid" id="projects-grid-container"></div>
+    
+    <!-- 프로젝트 상세 내용을 보여주는 레이어 모달 컴포넌트 -->
+    <edu-project-modal id="project-detail-modal"></edu-project-modal>
+  </section>
+
+  <!-- 4. 연락처 및 소셜 카드 섹션 컴포넌트 -->
+  <div id="contact" class="reveal-section">
+    <edu-contact id="contact-section"></edu-contact>
+  </div>
+
+  <!-- 5. 푸터 -->
+  <footer>
+    <p>본 포트폴리오는 에듀테크 콘텐츠 개발자로서의 전문성을 보여주기 위해 정적 배포용으로 기획되었습니다.</p>
+    <p class="copyright">© 2026 Lee Seung-hwa. All rights reserved.</p>
+  </footer>
+
+  <!-- 메인 자바스크립트 모듈 로드 -->
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

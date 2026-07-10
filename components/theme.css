@@ -1,0 +1,83 @@
+/*
+ * 이승화의 에듀테크 포트폴리오 공통 테마 및 스타일 정의
+ * design.md의 디자인 시스템 스펙을 충족하도록 CSS 변수 및 리셋 적용
+ */
+
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+:root {
+  /* 브랜드 테마 컬러 */
+  --color-primary-main: #ff9f0a;
+  --color-primary-light: #ffd60a;
+  --color-primary-dark: #ff8500;
+  --color-secondary-main: #30b0c7;
+  --color-secondary-green: #34c759;
+
+  /* 무채색 및 시스템 컬러 */
+  --color-text-primary: #1c1c1e;
+  --color-text-secondary: #8e8e93;
+  --color-bg-main: #faf9f6;
+  --color-bg-card: #ffffff;
+  --color-border: #e5e5ea;
+  --color-overlay: rgba(28, 28, 30, 0.6);
+
+  /* 그리드 간격 (8px 배수 시스템) */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  --spacing-xxl: 64px;
+
+  /* 둥글기 스펙 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* 그림자 효과 */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.08);
+
+  /* 애니메이션 트랜지션 */
+  --transition-normal: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 기본 브라우저 스타일 리셋 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background-color: var(--color-bg-main);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* 모바일 뷰포트 반응형 미디어 쿼리 믹스인용 클래스 */
+@media (max-width: 767px) {
+  :root {
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+  }
+}
