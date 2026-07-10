@@ -8,6 +8,7 @@ class EduHero extends HTMLElement {
     this.attachShadow({ mode: "open" });
     
     // 기본 초기 데이터 설정 (비동기 데이터 로드 전 대비용 백업)
+    this._name = "이승화";
     this._title = "하드웨어로 배움의 즐거움을 설계하는 에듀테크 콘텐츠 개발자";
     this._description = "아두이노와 라즈베리파이를 활용한 피지컬 컴퓨팅 교육에 강점이 있습니다. 기술을 재미있고 직관적인 콘텐츠로 풀어내어 학습자에게 창의적인 메이커 경험을 선물합니다.";
     this._skills = ["Arduino", "Raspberry Pi", "Python", "C/C++"];
@@ -23,6 +24,7 @@ class EduHero extends HTMLElement {
 
   // 외부 JSON 설정 파일 로드 후 데이터 바인딩을 위한 setter
   set profileData(data) {
+    if (data.name) this._name = data.name;
     if (data.title) this._title = data.title;
     if (data.description) this._description = data.description;
     if (data.skills) this._skills = data.skills;
@@ -301,7 +303,7 @@ class EduHero extends HTMLElement {
 
         <!-- 오른쪽: PRD 명시 사항 - 자기소개 요약 카드 -->
         <div class="profile-card">
-          <span class="card-header">이승화의 핵심 역량 요약</span>
+          <span class="card-header">${this._name}의 핵심 역량 요약</span>
           <ul class="bullets">
             ${bulletList}
           </ul>

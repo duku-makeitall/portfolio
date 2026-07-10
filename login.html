@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관리자 로그인 | 이승화 에듀테크 포트폴리오</title>
+  <link rel="stylesheet" href="./components/theme.css">
+  <style>
+    /* 로그인 전용 레이아웃 */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: var(--color-bg-main);
+      padding: var(--spacing-sm);
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      background-color: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl, 24px);
+      padding: var(--spacing-xl, 48px) var(--spacing-lg, 32px);
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      transition: var(--transition-normal);
+    }
+
+    .login-logo {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--color-text-primary);
+      margin-bottom: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .login-logo span {
+      color: var(--color-primary-main);
+    }
+
+    .login-subtitle {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md, 12px);
+      font-size: 16px;
+      font-family: inherit;
+      color: var(--color-text-primary);
+      background-color: var(--color-bg-card);
+      transition: var(--transition-normal);
+      box-sizing: border-box;
+    }
+
+    input[type="password"]:focus {
+      outline: none;
+      border-color: var(--color-primary-main);
+      box-shadow: 0 0 0 3px rgba(255, 159, 10, 0.15);
+    }
+
+    .btn-login {
+      width: 100%;
+      height: 52px;
+      background-color: var(--color-primary-main);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: var(--radius-md, 12px);
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(255, 159, 10, 0.2);
+      transition: var(--transition-bounce);
+    }
+
+    .btn-login:hover {
+      background-color: var(--color-primary-light);
+      color: var(--color-text-primary);
+    }
+
+    .btn-login:active {
+      transform: scale(0.97);
+    }
+
+    .error-msg {
+      color: #ff3b30;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 16px;
+      min-height: 20px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .error-msg.visible {
+      opacity: 1;
+    }
+
+    /* 흔들림 효과 애니메이션 (PRD 명시) */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    .back-home {
+      display: inline-block;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--color-secondary-main);
+      font-weight: 600;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container" id="login-box">
+    <div class="login-logo">
+      <span>⚙</span> SEUNG HWA <span>ADMIN</span>
+    </div>
+    <div class="login-subtitle">이승화 에듀테크 포트폴리오 관리자 로그인</div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label for="password">관리자 비밀번호</label>
+        <input type="password" id="password" required placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-login">로그인</button>
+    </form>
+
+    <div class="error-msg" id="error-message">비밀번호가 올바르지 않습니다. 다시 시도해 주세요.</div>
+
+    <a href="index.html" class="back-home">← 포트폴리오 홈으로 돌아가기</a>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const loginForm = document.getElementById("login-form");
+      const passwordInput = document.getElementById("password");
+      const errorMsg = document.getElementById("error-message");
+      const loginBox = document.getElementById("login-box");
+
+      // 이미 로그인되어 있으면 admin.html로 이동
+      if (sessionStorage.getItem("admin_logged_in") === "true") {
+        window.location.href = "admin.html";
+      }
+
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        
+        const password = passwordInput.value;
+        
+        // 정적 웹페이지이므로 단순 비밀번호 매칭 (기본값: admin1234)
+        if (password === "admin1234") {
+          sessionStorage.setItem("admin_logged_in", "true");
+          errorMsg.classList.remove("visible");
+          
+          // 로그인 성공 알림 후 관리자 페이지로 이동
+          window.location.href = "admin.html";
+        } else {
+          // 로그인 실패 처리: Shake 효과 및 에러 노출
+          errorMsg.classList.add("visible");
+          loginBox.classList.add("shake");
+          passwordInput.value = "";
+          passwordInput.focus();
+
+          // 애니메이션 클래스 제거 (재반복 가능하도록)
+          setTimeout(() => {
+            loginBox.classList.remove("shake");
+          }, 500);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

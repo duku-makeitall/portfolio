@@ -16,8 +16,14 @@ class EduHeader extends HTMLElement {
   render() {
     this.shadowRoot.innerHTML = `
       <style>
+        /* Shadow DOM 리셋 */
+        * {
+          box-sizing: border-box;
+        }
+
         /* 상단 헤더 컨테이너 스타일 */
         header {
+          box-sizing: border-box;
           position: fixed;
           top: 0;
           left: 0;
@@ -92,8 +98,33 @@ class EduHeader extends HTMLElement {
           transition: var(--transition-normal, all 0.25s ease);
         }
 
-        nav a:hover::after, nav a.active::after {
+         nav a:hover::after, nav a.active::after {
           width: 100%;
+        }
+
+        /* 관리자 로그인 버튼 스타일 */
+        nav a.admin-login-btn {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--color-primary-main, #ff9f0a);
+          padding: 6px 12px;
+          border: 1px solid var(--color-primary-main, #ff9f0a);
+          border-radius: var(--radius-md, 12px);
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          transition: var(--transition-bounce, all 0.2s ease);
+        }
+
+        nav a.admin-login-btn::after {
+          display: none; /* 하단 언더라인 바 제거 */
+        }
+
+        nav a.admin-login-btn:hover {
+          background-color: var(--color-primary-main, #ff9f0a);
+          color: white;
+          border-color: var(--color-primary-main, #ff9f0a);
+          transform: translateY(-2px);
         }
 
         /* 반응형 스타일 모바일 대응 */
@@ -106,10 +137,15 @@ class EduHeader extends HTMLElement {
             font-size: 18px;
           }
           nav ul {
-            gap: 16px;
+            gap: 12px;
+            align-items: center;
           }
           nav a {
-            font-size: 14px;
+            font-size: 13px;
+          }
+          nav a.admin-login-btn {
+            padding: 4px 8px;
+            font-size: 11px;
           }
         }
       </style>
@@ -121,6 +157,7 @@ class EduHeader extends HTMLElement {
             <li><a href="#home" class="nav-link active">소개</a></li>
             <li><a href="#projects" class="nav-link">프로젝트</a></li>
             <li><a href="#contact" class="nav-link">연락처</a></li>
+            <li><a href="login.html" class="admin-login-btn" title="관리자 로그인">⚙ 로그인</a></li>
           </ul>
         </nav>
       </header>
