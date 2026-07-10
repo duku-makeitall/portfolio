@@ -29,10 +29,11 @@ class EduHeader extends HTMLElement {
           left: 0;
           width: 100%;
           height: 70px;
-          background-color: rgba(250, 249, 246, 0.85); /* 웜톤 배경 및 블러 효과 */
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
+          background-color: rgba(255, 255, 255, 0.9); /* 완전한 흰색 반투명으로 본문(미색)과 확실하게 구분 */
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
           border-bottom: 1px solid var(--color-border, #e5e5ea);
+          box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.04)); /* 상단바 구분을 위한 은은한 그림자 추가 */
           display: flex;
           justify-content: space-between;
           align-items: center;
