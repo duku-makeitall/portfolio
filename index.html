@@ -6,6 +6,15 @@
   <title>이승화 | 에듀테크 콘텐츠 개발자 포트폴리오</title>
   <!-- 공통 디자인 시스템 CSS 스타일시트 로드 -->
   <link rel="stylesheet" href="./components/theme.css">
+  <!-- EmailJS SDK 로드 및 초기화 -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+      emailjs.init({
+        publicKey: "-MbzzmIbswDNSsbh8",
+      });
+    })();
+  </script>
   <style>
     /* 데모 페이지 전용 추가 레이아웃 스타일 */
     
@@ -121,6 +130,7 @@
   <!-- 4. 연락처 및 소셜 카드 섹션 컴포넌트 -->
   <div id="contact" class="reveal-section">
     <edu-contact id="contact-section"></edu-contact>
+    <edu-contact-form id="contact-form-section"></edu-contact-form>
   </div>
 
   <!-- 5. 푸터 -->

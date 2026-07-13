@@ -8,6 +8,7 @@ import "./components/EduHero.js";
 import "./components/EduProjectCard.js";
 import "./components/EduProjectModal.js";
 import "./components/EduContact.js";
+import "./components/EduContactForm.js";
 import { supabase } from "./supabase.js";
 
 document.addEventListener("DOMContentLoaded", () => {
