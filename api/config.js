@@ -1,6 +1,6 @@
 /**
  * Vercel Serverless Function - 공통 Config 제공 API
- * 서버 환경변수에서 Supabase URL과 Public Key(supabaseKey)를 읽어와 클라이언트에 제공합니다.
+ * 서버 환경변수에서 Supabase URL과 Public Anon Key를 읽어와 클라이언트에 제공합니다.
  * 소스 코드상에 API 키 정보가 노출 및 하드코딩되는 것을 원천 차단합니다.
  */
 export default async function handler(req, res) {
