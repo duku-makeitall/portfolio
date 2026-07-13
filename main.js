@@ -11,7 +11,7 @@ import "./components/EduContact.js";
 import "./components/EduContactForm.js";
 import { supabase } from "./supabase.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+const init = () => {
   // 2. 초기 렌더링에 필요한 컴포넌트 노드들을 참조합니다.
   const heroSection = document.getElementById("hero-section");
   const contactSection = document.getElementById("contact-section");
@@ -192,4 +192,10 @@ document.addEventListener("DOMContentLoaded", () => {
   revealElements.forEach(element => {
     revealObserver.observe(element);
   });
-});
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}

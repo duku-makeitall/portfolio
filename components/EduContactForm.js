@@ -1,16 +1,13 @@
 /**
  * 이승화의 에듀테크 포트폴리오 - 연락폼 컴포넌트
- * 이름, 이메일 주소, 메시지를 입력받아 EmailJS SDK를 사용하여 이메일을 전송합니다.
+ * 이름, 이메일 주소, 메시지를 입력받아 서버리스 API 프록시(/api/send-email)를 통해 이메일을 전송합니다.
+ * 스팸 방지 기능(Honeypot, 60초 전송 쿨다운)이 탑재되어 있습니다.
  * design.md의 색상, 타이포그래피, 버튼/인터랙션 스펙을 충족하도록 제작되었습니다.
  */
 class EduContactForm extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    
-    // EmailJS 정보 설정
-    this.serviceId = "service_pjm88i8";
-    this.templateId = "template_o3yiigj";
   }
 
   connectedCallback() {
@@ -45,6 +42,36 @@ class EduContactForm extends HTMLElement {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      // 1. 쿨다운 검사 (Rate Limit - 60초)
+      const lastSend = localStorage.getItem("contact_form_last_send");
+      if (lastSend) {
+        const diff = Date.now() - parseInt(lastSend, 10);
+        if (diff < 60000) {
+          const remainingSeconds = Math.ceil((60000 - diff) / 1000);
+          this.showToast(`보안을 위해 ${remainingSeconds}초 후에 다시 전송할 수 있습니다.`, false);
+          return;
+        }
+      }
+
+      // 2. Honeypot 필드 검사 (봇 차단)
+      const honeyValue = this.shadowRoot.getElementById("input-honey").value;
+      if (honeyValue) {
+        console.warn("봇 탐지됨: Honeypot 필드가 작성되었습니다.");
+        // 봇에게는 성공한 것처럼 속여 차단당했음을 감지하지 못하게 합니다.
+        submitBtn.disabled = true;
+        spinner.classList.add("active");
+        btnText.textContent = "전송 중...";
+        
+        setTimeout(() => {
+          submitBtn.disabled = false;
+          spinner.classList.remove("active");
+          btnText.textContent = "이메일 보내기";
+          this.showToast("이메일이 성공적으로 전송되었습니다!");
+          form.reset();
+        }, 1000);
+        return;
+      }
+
       const name = this.shadowRoot.getElementById("input-name").value.trim();
       const email = this.shadowRoot.getElementById("input-email").value.trim();
       const message = this.shadowRoot.getElementById("input-message").value.trim();
@@ -68,28 +95,32 @@ class EduContactForm extends HTMLElement {
       btnText.textContent = "전송 중...";
 
       try {
-        // 전역 emailjs 객체가 로드되어 있는지 확인
-        if (typeof window.emailjs === "undefined") {
-          throw new Error("EmailJS SDK가 로드되지 않았습니다.");
-        }
-
-        // 사용자가 제공한 전송 코드 형식 준수
-        const response = await window.emailjs.send(this.serviceId, this.templateId, {
-          from_name: name,
-          from_email: email,
-          message: message,
+        // 서버리스 API 프록시 호출
+        const response = await fetch("/api/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from_name: name,
+            from_email: email,
+            message: message,
+          }),
         });
 
-        if (response.status === 200) {
+        if (response.ok) {
           this.showToast("이메일이 성공적으로 전송되었습니다!");
           form.reset();
+          // 전송 성공 시 타임스탬프 기록
+          localStorage.setItem("contact_form_last_send", Date.now().toString());
         } else {
-          console.error("EmailJS 전송 오류:", response);
-          this.showToast("이메일 전송에 실패했습니다. 다시 시도해 주세요.", false);
+          const errorData = await response.json();
+          console.error("서버 API 오류:", errorData.error);
+          this.showToast(errorData.error || "이메일 전송에 실패했습니다. 다시 시도해 주세요.", false);
         }
       } catch (error) {
-        console.error("오류 발생:", error);
-        this.showToast("이메일 전송 중 오류가 발생했습니다.", false);
+        console.error("네트워크 오류 발생:", error);
+        this.showToast("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", false);
       } finally {
         // 원래 상태로 복구
         submitBtn.disabled = false;
@@ -205,6 +236,17 @@ class EduContactForm extends HTMLElement {
         textarea {
           resize: vertical;
           min-height: 150px;
+        }
+
+        /* 허니팟 숨김 스타일 */
+        .hidden-field {
+          display: none !important;
+          opacity: 0;
+          position: absolute;
+          width: 0;
+          height: 0;
+          pointer-events: none;
+          z-index: -1;
         }
 
         /* 제출 버튼 컨테이너 */
@@ -325,6 +367,12 @@ class EduContactForm extends HTMLElement {
         <p class="form-desc">궁금한 점이 있거나 제안하실 내용이 있다면 언제든지 직접 메시지를 남겨 주세요.</p>
         
         <form id="contact-form">
+          <!-- 봇 감지용 스팸 방지 필드 (Honeypot) -->
+          <div class="hidden-field">
+            <label for="input-honey">이 필드는 비워두세요</label>
+            <input type="text" id="input-honey" tabindex="-1" autocomplete="off">
+          </div>
+
           <div class="form-grid">
             <div class="form-group">
               <label for="input-name">이름 *</label>

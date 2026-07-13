@@ -36,3 +36,10 @@ build/
 # Local draft preview data (optional backup)
 # If you want to keep your draft data strictly local to your browser/computer:
 # portfolio_draft_data is stored in LocalStorage, so it won't be pushed anyway.
+
+# Local Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
