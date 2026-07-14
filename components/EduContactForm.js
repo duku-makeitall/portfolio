@@ -15,7 +15,7 @@ class EduContactForm extends HTMLElement {
     this.setupForm();
   }
 
-  showToast(message, isSuccess = true) {
+  showToast(message, isSuccess = true, duration = 3000) {
     const toast = this.shadowRoot.getElementById("toast");
     if (!toast) return;
 
@@ -26,9 +26,13 @@ class EduContactForm extends HTMLElement {
     
     toast.classList.add("visible");
     
-    setTimeout(() => {
+    if (this._toastTimeout) {
+      clearTimeout(this._toastTimeout);
+    }
+    
+    this._toastTimeout = setTimeout(() => {
       toast.classList.remove("visible");
-    }, 3000);
+    }, duration);
   }
 
   setupForm() {
@@ -114,13 +118,36 @@ class EduContactForm extends HTMLElement {
           // 전송 성공 시 타임스탬프 기록
           localStorage.setItem("contact_form_last_send", Date.now().toString());
         } else {
-          const errorData = await response.json();
-          console.error("서버 API 오류:", errorData.error);
-          this.showToast(errorData.error || "이메일 전송에 실패했습니다. 다시 시도해 주세요.", false);
+          let errorMsg = "이메일 전송에 실패했습니다. 다시 시도해 주세요.";
+          let errorData = null;
+          
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            try {
+              errorData = await response.json();
+              console.error("서버 API 오류 상세:", errorData);
+              if (errorData.error) {
+                errorMsg = errorData.detail 
+                  ? `${errorData.error}\n(상세 원인: ${errorData.detail})` 
+                  : errorData.error;
+              }
+            } catch (jsonErr) {
+              console.error("JSON 파싱 에러:", jsonErr);
+            }
+          }
+          
+          if (!errorData) {
+            const text = await response.text();
+            console.error(`서버 API 오류 (상태 코드: ${response.status}):`, text);
+            errorMsg = `서버 오류가 발생했습니다. (상태 코드: ${response.status})\n${text.substring(0, 100)}`;
+          }
+          
+          this.showToast(errorMsg, false, 8000);
         }
       } catch (error) {
         console.error("네트워크 오류 발생:", error);
-        this.showToast("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", false);
+        const errorMsg = `네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.\n(에러: ${error.message || error})`;
+        this.showToast(errorMsg, false, 8000);
       } finally {
         // 원래 상태로 복구
         submitBtn.disabled = false;
@@ -336,6 +363,9 @@ class EduContactForm extends HTMLElement {
           pointer-events: none;
           z-index: 9999;
           transition: opacity 0.3s ease, transform 0.3s ease;
+          max-width: 90vw;
+          white-space: pre-wrap;
+          word-break: break-all;
         }
 
         .toast.visible {
